@@ -25,6 +25,7 @@
 
 # aftercare_app/urls.py
 from django.urls import path
+
 from .views.auth import DoctorRegisterView, LoginView
 from .views.patient_views import PatientSearchCreateView
 from .views.prescription_views import PrescriptionCreateView, PatientPrescriptionsView

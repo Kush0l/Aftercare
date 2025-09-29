@@ -6,7 +6,7 @@
 3. activate env :- source env/bin/activate
 
 ## setup project
-1. pip install -r "requirements.txt"
+1. pip install -r "requirements.txt"pip
 
 
 
