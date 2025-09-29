@@ -1,6 +1,12 @@
 # urls.py
 from django.urls import path
 from .views import auth, patient_views, prescription_views, medicine_views, doctor_views
+from django.urls import path
+from .views.auth import DoctorRegisterView, LoginView
+from .views.patient_views import PatientSearchCreateView
+from .views.prescription_views import PrescriptionCreateView, PatientPrescriptionsView
+from .views.medicine_views import MarkMedicineTakenView, HealthUpdateView
+from .views.doctor_views import DoctorDashboardView
 
 urlpatterns = [
     # Authentication
