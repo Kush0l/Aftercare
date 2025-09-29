@@ -1,3 +1,21 @@
 Watching for file changes with StatReloader
 /home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_backend/settings.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /api/auth/doctor/register
+"POST /api/auth/doctor/register HTTP/1.1" 404 2259
+/home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_backend/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_app/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_app/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_app/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"POST /api/auth/doctor/register HTTP/1.1" 201 45
+/home/agastya/onyx-project/Aftercare/aftercare_backend/aftercare_backend/settings.py changed, reloading.
+Watching for file changes with StatReloader
