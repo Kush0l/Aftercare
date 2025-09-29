@@ -63,7 +63,7 @@ class HealthUpdateView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    @user_type_required('patient')
+    @user_type_required(['patient', 'doctor'])
     def get(self, request):
         try:
             from ..models import HealthUpdate

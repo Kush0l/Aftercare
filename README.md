@@ -11,3 +11,9 @@
 
 
 https://pypi.org/project/APScheduler/
+
+
+todo:
+
+- get request of get health updates
+- /api/patient/today-medicines

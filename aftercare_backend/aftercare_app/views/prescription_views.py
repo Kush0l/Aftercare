@@ -36,12 +36,25 @@ class PrescriptionCreateView(View):
                     instructions=med_data.get('instructions', '')
                 )
 
+                # for schedule_data in med_data.get('schedules', []):
+                #     MedicineSchedule.objects.create(
+                #         medicine=medicine,
+                #         scheduled_time=schedule_data['time'],
+                #         scheduled_date=schedule_data['date']
+                #     )
+
                 for schedule_data in med_data.get('schedules', []):
-                    MedicineSchedule.objects.create(
-                        medicine=medicine,
-                        scheduled_time=schedule_data['time'],
-                        scheduled_date=schedule_data['date']
-                    )
+                    date = schedule_data.get('date')
+                    time = schedule_data.get('time')
+                    if date and time:
+                        datetime_str = f"{date} {time}"
+                        MedicineSchedule.objects.create(
+                            medicine=medicine,
+                            scheduled_time=datetime_str,
+                            scheduled_date=date
+                        )
+
+
 
             ActivityLog.objects.create(
                 user=request.user,

@@ -24,6 +24,9 @@ class DoctorRegisterView(View):
             phone_number = data.get('phone_number')
             specialization = data.get('specialization')
             license_number = data.get('license_number')
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            hospital_affiliation = data.get('hospital_affiliation')
 
             if User.objects.filter(username=username).exists():
                 return JsonResponse({'error': 'Username already exists'}, status=400)
@@ -31,18 +34,23 @@ class DoctorRegisterView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'error': 'Email already exists'}, status=400)
 
+            # Create user with all available fields
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password,
                 user_type='doctor',
-                phone_number=phone_number
+                phone_number=phone_number,
+                first_name=first_name or '',  # Handle optional fields
+                last_name=last_name or ''     # Handle optional fields
             )
 
+            # Create doctor profile
             DoctorProfile.objects.create(
                 user=user,
                 specialization=specialization,
-                license_number=license_number
+                license_number=license_number,
+                hospital_affiliation=hospital_affiliation or ''  # Handle optional field
             )
 
             ActivityLog.objects.create(

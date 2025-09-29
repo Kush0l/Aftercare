@@ -41,10 +41,10 @@ class UserTypeMiddleware(MiddlewareMixin):
             return JsonResponse({'error': 'Invalid token'}, status=401)
 
         # Check user type for protected endpoints
-        if hasattr(view_func, 'required_user_type'):
-            required_type = view_func.required_user_type
-            if user.user_type != required_type:
-                return JsonResponse({'error': f'Access denied. {required_type.capitalize()} role required'}, status=403)
+        if hasattr(view_func, 'required_user_types'):
+            required_types = view_func.required_user_types
+            if user.user_type not in required_types:
+                return JsonResponse({'error': f"Access denied. One of {', '.join(required_types)} role(s) required"}, status=403)
 
         return None
 
