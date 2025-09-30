@@ -8,7 +8,6 @@ class AftercareAppConfig(AppConfig):
     name = 'aftercare_app'
 
     def ready(self):
-        # Import inside ready() to avoid circular imports
         from django.conf import settings
         
         # Start the reminder service when Django starts
