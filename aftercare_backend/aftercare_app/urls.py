@@ -4,7 +4,7 @@ from .views.auth import DoctorRegisterView, LoginView
 from .views.patient_views import PatientSearchCreateView
 from .views.prescription_views import PrescriptionCreateView, PatientPrescriptionsView
 from .views.medicine_views import MarkMedicineTakenView, HealthUpdateView, GetTodayMedicineView
-from .views.doctor_views import DoctorDashboardView, DoctorPatientDetailView
+from .views.doctor_views import DoctorDashboardView, DoctorPatientDetailView, DoctorPatientHealthUpdatesView
 
 urlpatterns = [
     # Authentication
@@ -26,4 +26,5 @@ urlpatterns = [
     # Doctor Dashboard
     path('api/doctor/dashboard', DoctorDashboardView.as_view(), name='doctor_dashboard'),
     path('api/doctor/patients/<uuid:patient_id>', DoctorPatientDetailView.as_view(), name='doctor-patient-detail'),
+    path("api/doctor/patient/<uuid:patient_id>/health-updates", DoctorPatientHealthUpdatesView.as_view(), name="doctor-patient-health-updates"),
 ]

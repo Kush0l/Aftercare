@@ -285,3 +285,32 @@ class DoctorPatientDetailView(View):
         ).order_by('-count')[:5]
         
         return list(medicines)
+    
+class DoctorPatientHealthUpdatesView(View):
+    @user_type_required('doctor')
+    def get(self, request, patient_id):
+        try:
+            # Verify patient exists
+            patient = get_object_or_404(User, id=patient_id, user_type='patient')
+
+            # Verify doctor has prescribed to this patient
+            if not Prescription.objects.filter(doctor=request.user, patient=patient).exists():
+                return JsonResponse({"error": "Access denied. You can only view your patients' health updates."}, status=403)
+
+            # Get all health updates for the patient
+            updates = HealthUpdate.objects.filter(patient=patient).order_by('-created_at')
+
+            data = [
+                {
+                    "update_id": str(update.id),
+                    "update_text": update.update_text,
+                    "created_at": update.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    "days_ago": (datetime.now().date() - update.created_at.date()).days
+                }
+                for update in updates
+            ]
+
+            return JsonResponse({"patient_id": str(patient.id), "health_updates": data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
