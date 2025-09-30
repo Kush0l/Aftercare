@@ -261,7 +261,7 @@ class ReminderService:
         Medicine: {medicine.name}
         Dosage: {medicine.dosage}
         Instructions: {medicine.instructions}
-        Scheduled Time: {schedule.scheduled_time.strftime('%I:%M %p')}
+        Scheduled Time: {timezone.localtime(schedule.scheduled_time, pytz.timezone("Asia/Kolkata")).strftime('%I:%M %p')}
 
         Please click the link below to confirm you've taken your medicine:
         {tracking_link}
