@@ -59,15 +59,15 @@ class PatientSearchCreateView(View):
                 PatientProfile.objects.create(user=patient)
 
                 # Send email with login credentials
-                # send_mail(
-                #     'Your Patient Account Created',
-                #     f'Hello {first_name},\\n\\nYour patient account has been created.\\n\\n'
-                #     f'Username: {username}\\nPassword: {password}\\n\\n'
-                #     f'Please login and change your password.',
-                #     settings.DEFAULT_FROM_EMAIL,
-                #     [email],
-                #     fail_silently=False,
-                # )
+                send_mail(
+                    'Your Patient Account Created',
+                    f'Hello {first_name},\\n\\nYour patient account has been created.\\n\\n'
+                    f'Username: {username}\\nPassword: {password}\\n\\n'
+                    f'Please login and change your password.',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
 
                 ActivityLog.objects.create(
                     user=request.user,
