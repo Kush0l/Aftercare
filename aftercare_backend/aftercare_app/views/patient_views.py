@@ -21,65 +21,105 @@ class PatientSearchCreateView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+
+            # Required fields
             email = data.get('email')
             first_name = data.get('first_name')
             last_name = data.get('last_name')
             phone_number = data.get('phone_number')
 
-            # Search for existing patient
-            patients = User.objects.filter(
-                user_type='patient',
-                email=email
-            )
+            # Optional profile fields
+            date_of_birth = data.get('date_of_birth')
+            emergency_contact = data.get('emergency_contact', '')
+            medical_history = data.get('medical_history', '')
+            allergies = data.get('allergies', '')
 
-            if patients.exists():
-                patient = patients.first()
+            if not email or not first_name or not last_name:
+                return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+            # Check if patient already exists
+            patient = User.objects.filter(user_type='patient', email=email).first()
+            if patient:
+                profile = getattr(patient, 'patient_profile', None)
+                profile_data = {}
+                if profile:
+                    profile_data = {
+                        "date_of_birth": str(profile.date_of_birth) if profile.date_of_birth else None,
+                        "emergency_contact": profile.emergency_contact,
+                        "medical_history": profile.medical_history,
+                        "allergies": profile.allergies
+                    }
+
                 return JsonResponse({
                     'patient_exists': True,
                     'patient_id': str(patient.id),
+                    'patient_data': {
+                        "first_name": patient.first_name,
+                        "last_name": patient.last_name,
+                        "email": patient.email,
+                        "phone_number": patient.phone_number,
+                        "profile": profile_data
+                    },
                     'message': 'Patient found'
                 })
-            else:
-                # Create new patient
-                # password = generate_random_password()
-                password = "patient123"
-                print(password)
-                username = f"patient_{email.split('@')[0]}"
 
-                patient = User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=password,
-                    user_type='patient',
-                    first_name=first_name,
-                    last_name=last_name,
-                    phone_number=phone_number
-                )
+            # 2️⃣ Create new patient
+            password = generate_random_password()  # secure random password
+            username = f"patient_{email.split('@')[0]}"
 
-                PatientProfile.objects.create(user=patient)
+            patient = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                user_type='patient',
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone_number
+            )
 
-                # Send email with login credentials
-                send_mail(
-                    'Your Patient Account Created',
-                    f'Hello {first_name},\\n\\nYour patient account has been created.\\n\\n'
-                    f'Username: {username}\\nPassword: {password}\\n\\n'
-                    f'Please login and change your password.',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    fail_silently=False,
-                )
+            # 3️⃣ Create patient profile
+            PatientProfile.objects.create(
+                user=patient,
+                date_of_birth=date_of_birth if date_of_birth else None,
+                emergency_contact=emergency_contact,
+                medical_history=medical_history,
+                allergies=allergies
+            )
 
-                ActivityLog.objects.create(
-                    user=request.user,
-                    action="Patient account created",
-                    details=f"Doctor created patient account for {email}"
-                )
+            # 4️⃣ Send email
+            send_mail(
+                'Your Patient Account Created',
+                f'Hello {first_name},\n\nYour patient account has been created.\n\n'
+                f'Username: {username}\nPassword: {password}\n\n'
+                f'Please login and change your password.',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
 
-                return JsonResponse({
-                    'patient_exists': False,
-                    'patient_id': str(patient.id),
-                    'message': 'Patient account created successfully'
-                })
+            ActivityLog.objects.create(
+                user=request.user,
+                action="Patient account created",
+                details=f"Doctor created patient account for {email}"
+            )
+
+            return JsonResponse({
+                'patient_exists': False,
+                'patient_id': str(patient.id),
+                'patient_data': {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "email": email,
+                    "phone_number": phone_number,
+                    "profile": {
+                        "date_of_birth": date_of_birth,
+                        "emergency_contact": emergency_contact,
+                        "medical_history": medical_history,
+                        "allergies": allergies
+                    }
+                },
+                'message': 'Patient account created successfully'
+            })
 
         except Exception as e:
             ActivityLog.objects.create(
