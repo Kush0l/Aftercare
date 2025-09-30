@@ -63,7 +63,7 @@ class PatientSearchCreateView(View):
                     'message': 'Patient found'
                 })
 
-            # 2️⃣ Create new patient
+            #  Create new patient
             password = generate_random_password()  # secure random password
             username = f"patient_{email.split('@')[0]}"
 
@@ -77,7 +77,7 @@ class PatientSearchCreateView(View):
                 phone_number=phone_number
             )
 
-            # 3️⃣ Create patient profile
+            # Create patient profile
             PatientProfile.objects.create(
                 user=patient,
                 date_of_birth=date_of_birth if date_of_birth else None,
@@ -86,7 +86,7 @@ class PatientSearchCreateView(View):
                 allergies=allergies
             )
 
-            # 4️⃣ Send email
+            # Send email
             send_mail(
                 'Your Patient Account Created',
                 f'Hello {first_name},\n\nYour patient account has been created.\n\n'
