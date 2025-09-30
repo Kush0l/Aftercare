@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from datetime import datetime
 from ..models import MedicineSchedule, ActivityLog
 from ..middleware import user_type_required
+from datetime import date
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MarkMedicineTakenView(View):
@@ -81,3 +82,43 @@ class HealthUpdateView(View):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GetTodayMedicineView(View):
+    @user_type_required('patient')
+    def get(self, request):
+        try:
+            today = date.today()
+
+            # Get schedules for this patient for today
+            schedules = MedicineSchedule.objects.filter(
+                scheduled_date=today,
+                medicine__prescription__patient=request.user
+            ).select_related("medicine")
+
+            result = []
+            for schedule in schedules:
+                result.append({
+                    "schedule_id": str(schedule.id),
+                    "medicine_name": schedule.medicine.name,
+                    "dosage": schedule.medicine.dosage,
+                    "instructions": schedule.medicine.instructions,
+                    "scheduled_time": schedule.scheduled_time.strftime("%I:%M %p"),
+                    "is_taken": schedule.is_taken,
+                    "taken_at": schedule.taken_at.isoformat() if schedule.taken_at else None,
+                    "reminder_sent": schedule.reminder_sent
+                })
+
+            # Log activity
+            ActivityLog.objects.create(
+                user=request.user,
+                action="Fetched today's medicines",
+                details=f"Patient fetched {len(result)} medicines for {today}"
+            )
+
+            return JsonResponse({"today_medicines": result})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
