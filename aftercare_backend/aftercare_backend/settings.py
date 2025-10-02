@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'aftercare_app',
+    "corsheaders",
 ]
 
 AUTH_USER_MODEL = 'aftercare_app.User'
@@ -53,6 +54,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'aftercare_app.middleware.UserTypeMiddleware',
     'aftercare_app.middleware.LoggingMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'aftercare_backend.urls'
@@ -182,3 +185,5 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # settings.py
 USE_TZ = True
 TIME_ZONE = 'Asia/Kolkata'  # Change this to your timezone
+
+CORS_ALLOW_ALL_ORIGINS = True
