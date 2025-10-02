@@ -38,12 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'aftercare_app',
+    'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'aftercare_app.User'
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,9 +55,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'aftercare_app.middleware.UserTypeMiddleware',
     'aftercare_app.middleware.LoggingMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'aftercare_backend.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React frontend URL
+]
+
 
 TEMPLATES = [
     {
