@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',   # ✅ only once
     'aftercare_app',
     "corsheaders",
-    'corsheaders',
+    
 ]
 
 AUTH_USER_MODEL = 'aftercare_app.User'
