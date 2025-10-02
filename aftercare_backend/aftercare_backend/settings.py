@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',   # ✅ only once
     'aftercare_app',
     "corsheaders",
+    
 ]
 
 AUTH_USER_MODEL = 'aftercare_app.User'
@@ -49,6 +50,11 @@ CORS_ALLOW_HEADERS = [
 ]
 
 ROOT_URLCONF = 'aftercare_backend.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React frontend URL
+]
+
 
 TEMPLATES = [
     {
