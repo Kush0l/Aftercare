@@ -64,7 +64,8 @@ class PatientSearchCreateView(View):
                 })
 
             #  Create new patient
-            password = generate_random_password()  # secure random password
+            # password = generate_random_password()  # secure random password
+            password = "patient123"
             username = f"patient_{email.split('@')[0]}"
 
             patient = User.objects.create_user(
