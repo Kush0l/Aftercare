@@ -115,10 +115,13 @@ class ReminderService:
 
         # SMS
         if patient.phone_number:
-            sms_body = f"💊 Reminder {scheduled_time_ist.strftime('%I:%M %p')}: " + ", ".join(
-                [f"{s.medicine.name} ({s.medicine.dosage})" for s in schedules]
-            )
+            sms_body = f"💊 Reminder {scheduled_time_ist.strftime('%I:%M %p')}: " + "\n".join(
+    [f"{s.medicine.name} ({s.medicine.dosage}) - http://localhost:5173/patient/dashboard" for s in schedules]
+)
+
+            
             try:
+                print("hellooo")
                 self.twilio_client.messages.create(
                     body=sms_body,
                     from_=settings.TWILIO_PHONE_NUMBER,

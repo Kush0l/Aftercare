@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { prescriptionAPI, medicineAPI } from '../api/axios';
-import { Pill, Calendar, CheckCircle, Clock, Heart } from 'lucide-react';
+import { Pill, Calendar, CheckCircle, Clock, Heart, LogOut } from 'lucide-react';
 
 const PatientDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [todayMedicines, setTodayMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [loadingMedicineId, setLoadingMedicineId] = useState(null); // track which medicine is loading
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPrescriptions();
@@ -29,15 +31,15 @@ const PatientDashboard = () => {
     const today = new Date().toISOString().split('T')[0];
     const medicines = [];
 
-    prescriptions.forEach(prescription => {
-      prescription.medicines.forEach(medicine => {
-        medicine.schedules.forEach(schedule => {
+    prescriptions.forEach((prescription) => {
+      prescription.medicines.forEach((medicine) => {
+        medicine.schedules.forEach((schedule) => {
           if (schedule.scheduled_date === today && !schedule.is_taken) {
             medicines.push({
               ...schedule,
               medicineName: medicine.name,
               dosage: medicine.dosage,
-              instructions: medicine.instructions
+              instructions: medicine.instructions,
             });
           }
         });
@@ -49,15 +51,21 @@ const PatientDashboard = () => {
 
   const markMedicineTaken = async (scheduleId) => {
     try {
+      setLoadingMedicineId(scheduleId); // start loading for this medicine
       await medicineAPI.markTaken(scheduleId);
-      // Update local state
-      setTodayMedicines(prev => 
-        prev.filter(med => med.id !== scheduleId)
-      );
+      setTodayMedicines((prev) => prev.filter((med) => med.id !== scheduleId));
       alert('Medicine marked as taken!');
     } catch (error) {
       alert('Failed to mark medicine as taken');
+    } finally {
+      setLoadingMedicineId(null); // reset loading state
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   if (loading) {
@@ -72,10 +80,17 @@ const PatientDashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Patient Dashboard</h1>
-        <Link to="/patient/health-updates" className="primary-button">
-          <Heart size={18} />
-          Health Updates
-        </Link>
+        <div className="header-actions">
+  <Link to="/patient/health-updates" className="primary-button">
+    <Heart size={18} />
+    Health Updates
+  </Link>
+  <button onClick={handleLogout} className="danger-button">
+    <LogOut size={18} />
+    Logout
+  </button>
+</div>
+
       </div>
 
       {/* Today's Medicines */}
@@ -104,9 +119,16 @@ const PatientDashboard = () => {
                 <button
                   onClick={() => markMedicineTaken(medicine.id)}
                   className="success-button"
+                  disabled={loadingMedicineId === medicine.id} // disable while loading
                 >
-                  <CheckCircle size={18} />
-                  Mark Taken
+                  {loadingMedicineId === medicine.id ? (
+                    <span className="spinner"></span> // show spinner
+                  ) : (
+                    <>
+                      <CheckCircle size={18} />
+                      Mark Taken
+                    </>
+                  )}
                 </button>
               </div>
             ))}
@@ -142,6 +164,26 @@ const PatientDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Spinner CSS */}
+      <style>
+        {`
+          .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };
