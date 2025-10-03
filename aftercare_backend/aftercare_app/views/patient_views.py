@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from ..models import User, PatientProfile, ActivityLog
+from ..models import User, PatientProfile, ActivityLog,PatientRevisit
 from ..middleware import user_type_required
 import secrets
 import string
@@ -130,3 +130,29 @@ class PatientSearchCreateView(View):
                 log_level='ERROR'
             )
             return JsonResponse({'error': str(e)}, status=400)
+        
+@method_decorator(user_type_required('patient'), name='dispatch')
+class PatientRevisitListView(View):
+    def get(self, request):
+        try:
+            patient = request.user  # logged-in patient
+
+            # Get all revisits for this patient, ordered by date
+            revisits = PatientRevisit.objects.filter(patient=patient).order_by('revisit_date')
+
+            data = []
+            for revisit in revisits:
+                data.append({
+                    "patient_name": f"{patient.first_name} {patient.last_name}",
+                    "doctor_name": f"{revisit.doctor.first_name} {revisit.doctor.last_name}",
+                    "revisit_date": revisit.revisit_date.strftime("%Y-%m-%d"),
+                    "expected_condition": revisit.expected_condition,
+                })
+
+            return JsonResponse({
+                "revisits": data,
+                "message": f"{len(data)} revisit(s) found"
+            }, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
