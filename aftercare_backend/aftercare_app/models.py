@@ -101,3 +101,20 @@ class ActivityLog(models.Model):
     class Meta:
         db_table = 'activity_logs'
         ordering = ['-timestamp']
+
+class PatientRevisit(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='revisits')
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scheduled_revisits')
+    prescription = models.ForeignKey(Prescription, on_delete=models.SET_NULL, null=True, blank=True, related_name='revisits')
+    
+    revisit_date = models.DateField()
+    expected_condition = models.TextField(blank=True)
+    actual_condition = models.TextField(blank=True)  # optional: doctor can update later
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'patient_revisits'
+        ordering = ['-revisit_date']
+
