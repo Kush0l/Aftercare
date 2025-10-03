@@ -90,6 +90,7 @@ class GetTodayMedicineView(View):
     def get(self, request):
         try:
             today = date.today()
+            print(today)
 
             # Get schedules for this patient for today
             schedules = MedicineSchedule.objects.filter(
