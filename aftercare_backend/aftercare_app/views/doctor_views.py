@@ -4,10 +4,11 @@ from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from datetime import datetime, timedelta
-from ..models import Prescription, HealthUpdate, MedicineSchedule, User, PatientProfile, Medicine
+from ..models import Prescription, HealthUpdate, MedicineSchedule, User, PatientProfile, Medicine,PatientRevisit
 from ..middleware import user_type_required
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Avg, Q, Max
+from django.views.decorators.csrf import csrf_exempt
 
 
 class DoctorDashboardView(View):
@@ -311,6 +312,66 @@ class DoctorPatientHealthUpdatesView(View):
             ]
 
             return JsonResponse({"patient_id": str(patient.id), "health_updates": data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        
+@method_decorator(csrf_exempt, name='dispatch')
+class SchedulePatientRevisitView(View):
+    @user_type_required('doctor')
+    def post(self, request, patient_id):
+        try:
+            data = json.loads(request.body)
+            revisit_date_str = data.get('revisit_date')
+            expected_condition = data.get('expected_condition', '')
+            prescription_id = data.get('prescription_id')
+
+            # Validate patient
+            patient = get_object_or_404(User, id=patient_id, user_type='patient')
+
+            # Validate doctor-patient relationship
+            if not Prescription.objects.filter(doctor=request.user, patient=patient).exists():
+                return JsonResponse({"error": "You can only schedule revisits for your patients."}, status=403)
+
+            # Validate revisit_date
+            if not revisit_date_str:
+                return JsonResponse({"error": "revisit_date is required"}, status=400)
+
+            try:
+                revisit_date = datetime.strptime(revisit_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
+
+            # Link prescription if provided
+            prescription = None
+            if prescription_id:
+                prescription = get_object_or_404(
+                    Prescription,
+                    id=prescription_id,
+                    doctor=request.user,
+                    patient=patient
+                )
+
+            # Create revisit
+            revisit = PatientRevisit.objects.create(
+                patient=patient,
+                doctor=request.user,
+                prescription=prescription,
+                revisit_date=revisit_date,
+                expected_condition=expected_condition
+            )
+
+            return JsonResponse({
+                "message": "Revisit scheduled successfully",
+                "revisit": {
+                    "id": str(revisit.id),
+                    "patient_id": str(patient.id),
+                    "doctor_id": str(request.user.id),
+                    "revisit_date": revisit.revisit_date.isoformat(),
+                    "expected_condition": revisit.expected_condition,
+                    "prescription_id": str(prescription.id) if prescription else None
+                }
+            }, status=201)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
