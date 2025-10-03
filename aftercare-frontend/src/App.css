@@ -1322,3 +1322,178 @@ input:valid, textarea:valid {
   gap: 12px;
   justify-content: flex-end; 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== Page Container ===== */
+.page-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  background-color: #f9fafb;
+}
+
+/* ===== Cards ===== */
+.card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Patient List Grid ===== */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.card .flex.items-center {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card .flex.items-center:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Back Button ===== */
+.back-button {
+  background-color: transparent;
+  border: none;
+  color: #1d4ed8;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #1e40af;
+}
+
+/* ===== Icon Styles ===== */
+.bg-blue-100 {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+/* ===== Section Headers ===== */
+.card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1f2937;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ===== Patient Info Text ===== */
+.card p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 0.4rem;
+}
+
+/* ===== Prescriptions ===== */
+.prescription-card {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  transition: all 0.2s ease;
+}
+
+.prescription-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.prescription-card strong {
+  color: #1e3a8a;
+}
+
+.medicine-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+/* ===== Health Updates ===== */
+.recent-updates p {
+  background: #f3f4f6;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* ===== Medication Adherence ===== */
+.med-adherence {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.med-adherence div {
+  background: #e0f2fe;
+  padding: 0.8rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 500;
+  color: #0369a1;
+}
+
+/* ===== Stats Section ===== */
+.stats p {
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 0.3rem;
+}
+
+.stats .badge {
+  display: inline-block;
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  margin-right: 0.3rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .med-adherence {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
