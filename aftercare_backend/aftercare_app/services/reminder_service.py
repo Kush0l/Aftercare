@@ -72,7 +72,7 @@ class ReminderService:
             logger.error(f"❌ Error sending reminders: {str(e)}", exc_info=True)
 
     def send_grouped_reminder(self, schedules):
-        """Send a single reminder for all medicines at the same time"""
+        """Send a single reminder for all medicines at the same scheduled time"""
         if not schedules:
             return
 
@@ -80,29 +80,25 @@ class ReminderService:
         ist = pytz.timezone("Asia/Kolkata")
         scheduled_time_ist = timezone.localtime(schedules[0].scheduled_time, ist)
 
-        # Build medicine list
-        medicines_list = "\n".join(
-            [f"- {s.medicine.name} ({s.medicine.dosage})" for s in schedules]
-        )
+    # Build medicine lines for both email and SMS
+        medicine_lines = [
+            f"- {s.medicine.name} ({s.medicine.dosage}) - Mark as taken: http://localhost:8000/api/medicine/mark-taken/{s.id} - Dashboard: http://localhost:5173/patient/dashboard"
+            for s in schedules
+        ]
+        medicines_text = "\n".join(medicine_lines)
 
-        # Email
+    # Email
         email_subject = f"💊 Medication Reminder ({scheduled_time_ist.strftime('%I:%M %p')})"
         email_body = f"""
-        Hello {patient.first_name},
+    Hello {patient.first_name},
 
-        It's time to take your medications scheduled for {scheduled_time_ist.strftime('%I:%M %p')}:
+    It's time to take your medications scheduled for {scheduled_time_ist.strftime('%I:%M %p')}:
 
-        {medicines_list}
+    {medicines_text}
 
-        Please click the links below to confirm:
-        """ + "\n".join(
-            [f"/api/medicine/mark-taken/{s.id} - {s.medicine.name}" for s in schedules]
-        ) + """
-
-        Thank you,
-        Your Healthcare Team
-        """
-
+    Thank you,
+    Your Healthcare Team
+    """
         try:
             send_mail(
                 email_subject,
@@ -115,15 +111,12 @@ class ReminderService:
         except Exception as e:
             logger.error(f"❌ Failed to send email to {patient.email}: {str(e)}")
 
-        # SMS
+    # SMS
         if patient.phone_number:
-            sms_body = f"💊 Reminder {scheduled_time_ist.strftime('%I:%M %p')}: " + "\n".join(
-    [f"{s.medicine.name} ({s.medicine.dosage}) - http://localhost:5173/patient/dashboard" for s in schedules]
-)
-
-            
+            sms_body = f"💊 Reminder {scheduled_time_ist.strftime('%I:%M %p')}:\n" + "\n".join(
+                [f"{s.medicine.name} ({s.medicine.dosage}) - Dashboard: http://localhost:5173/patient/dashboard" for s in schedules]
+            )
             try:
-                print("hellooo")
                 self.twilio_client.messages.create(
                     body=sms_body,
                     from_=settings.TWILIO_PHONE_NUMBER,
@@ -133,12 +126,90 @@ class ReminderService:
             except Exception as e:
                 logger.error(f"❌ Failed to send SMS to {patient.phone_number}: {str(e)}")
 
-        # Log
+    # Log activity
         ActivityLog.objects.create(
             user=patient,
             action="Medication reminder sent",
             details=f"Grouped reminder sent for {len(schedules)} medicines at {scheduled_time_ist}",
         )
+
+    
+
+#     def send_grouped_reminder(self, schedules):
+#         """Send a single reminder for all medicines at the same time"""
+#         if not schedules:
+#             return
+
+#         patient = schedules[0].medicine.prescription.patient
+#         ist = pytz.timezone("Asia/Kolkata")
+#         scheduled_time_ist = timezone.localtime(schedules[0].scheduled_time, ist)
+
+#         # Build medicine list
+#         medicines_list = "\n".join(
+#             [f"- {s.medicine.name} ({s.medicine.dosage})" for s in schedules]
+#         )
+
+#         # Email
+        
+#         email_subject = f"💊 Medication Reminder ({scheduled_time_ist.strftime('%I:%M %p')})"
+#         email_body = f"""
+#         Hello {patient.first_name},
+
+#         It's time to take your medications scheduled for {scheduled_time_ist.strftime('%I:%M %p')}:
+
+#         {medicines_list}
+
+#         Please click the links below to confirm you've taken your medicines:
+#         """ + "\n".join(
+#         [f"/api/medicine/mark-taken/{s.id} - {s.medicine.name} - Dashboard: http://localhost:5173/patient/dashboard" for s in schedules]
+#         ) + """
+
+#         Thank you,
+#         Your Healthcare Team
+#         """
+
+ 
+
+
+#         try:
+#             send_mail(
+#                 email_subject,
+#                 email_body,
+#                 settings.DEFAULT_FROM_EMAIL,
+#                 [patient.email],
+#                 fail_silently=False,
+#             )
+#             logger.info(f"📧 Grouped email sent to {patient.email}")
+#         except Exception as e:
+#             logger.error(f"❌ Failed to send email to {patient.email}: {str(e)}")
+
+#         # SMS
+#         if patient.phone_number:
+#             sms_body = f"💊 Reminder {scheduled_time_ist.strftime('%I:%M %p')}: " + "\n".join(
+#     [f"{s.medicine.name} ({s.medicine.dosage}) - http://localhost:5173/patient/dashboard" for s in schedules]
+# )
+
+            
+#             try:
+#                 print("hellooo")
+#                 self.twilio_client.messages.create(
+#                     body=sms_body,
+#                     from_=settings.TWILIO_PHONE_NUMBER,
+#                     to=patient.phone_number,
+#                 )
+#                 logger.info(f"📱 Grouped SMS sent to {patient.phone_number}")
+#             except Exception as e:
+#                 logger.error(f"❌ Failed to send SMS to {patient.phone_number}: {str(e)}")
+
+
+
+
+        # Log
+        # ActivityLog.objects.create(
+        #     user=patient,
+        #     action="Medication reminder sent",
+        #     details=f"Grouped reminder sent for {len(schedules)} medicines at {scheduled_time_ist}",
+        # )
 
 # Singleton instance
 reminder_service = ReminderService()
