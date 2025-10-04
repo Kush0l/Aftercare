@@ -10,23 +10,24 @@ import CreatePrescription from './pages/CreatePrescription';
 import PatientDashboard from './pages/PatientDashboard';
 import HealthUpdates from './pages/HealthUpdates';
 import PatientDetails from './components/PatientDetails'
+import PatientAnalytics from './components/PatientAnalytics';
 import './App.css';
 
 const ProtectedRoute = ({ children, requiredUserType }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
-  
+
   if (!user) {
     return <Navigate to="/login" />;
   }
-  
+
   if (requiredUserType && user.userType !== requiredUserType) {
     return <Navigate to={user.userType === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard'} />;
   }
-  
+
   return children;
 };
 
@@ -37,7 +38,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/doctor/register" element={<DoctorRegister />} />
-      
+
       {/* Doctor Routes with Layout */}
       <Route path="/doctor" element={
         <ProtectedRoute requiredUserType="doctor">
@@ -47,9 +48,10 @@ function AppRoutes() {
         <Route path="dashboard" element={<DoctorDashboard />} />
         <Route path="register-patient" element={<RegisterPatient />} />
         <Route path="create-prescription" element={<CreatePrescription />} />
-        <Route path="patient-details" element={<PatientDetails />} />
+        <Route path="patients" element={<PatientDetails />} />
+        <Route path="analytics" element={<PatientAnalytics />} />
       </Route>
-      
+
       {/* Patient Routes */}
       <Route path="/patient/dashboard" element={
         <ProtectedRoute requiredUserType="patient">
@@ -61,11 +63,11 @@ function AppRoutes() {
           <HealthUpdates />
         </ProtectedRoute>
       } />
-      
+
       <Route path="/" element={
         <Navigate to={user?.userType === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard'} />
       } />
-      
+
     </Routes>
   );
 }

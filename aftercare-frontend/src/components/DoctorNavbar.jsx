@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  Users, 
-  FileText, 
+import {
+  Home,
+  Users,
+  FileText,
   UserPlus,
   Pill,
-  LogOut
+  LogOut,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,10 +33,11 @@ const DoctorNavbar = () => {
       icon: FileText
     },
     {
-      path: '/doctor/patient-details',
+      path: '/doctor/patients',
       label: 'Patient Details',
       icon: Users
-    }
+    },
+
   ];
 
   const handleLogout = () => {
@@ -49,12 +51,12 @@ const DoctorNavbar = () => {
         <Pill className="navbar-logo" />
         <h2>Doctor Portal</h2>
       </div>
-      
+
       <div className="navbar-items">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          
+
           return (
             <Link
               key={item.path}
@@ -77,8 +79,8 @@ const DoctorNavbar = () => {
             <span className="user-role">Doctor</span>
           </div>
         </div>
-        
-        <button 
+
+        <button
           onClick={handleLogout}
           className="logout-button"
         >
