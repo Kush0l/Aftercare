@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { doctorAPI } from "../api/axios";
 import { User, Mail, Phone, Calendar, ArrowLeft } from "lucide-react";
-
+import PatientAnalytics from "./PatientAnalytics";
 const PatientsPage = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -143,6 +143,12 @@ const PatientsPage = () => {
               <p>First Prescription: {new Date(selectedPatient.first_prescription_date).toLocaleDateString()}</p>
               <p>Latest Prescription: {new Date(selectedPatient.latest_prescription_date).toLocaleDateString()}</p>
               <p>Most Prescribed: {selectedPatient.most_prescribed_medicines.map(m => `${m.name} (${m.count})`).join(", ")}</p>
+            </div>
+
+            {/* Analytics Charts */}
+            <div>
+              <h3 className="font-semibold">Analytics</h3>
+              <PatientAnalytics patient={selectedPatient} />
             </div>
           </div>
         </div>
