@@ -48,6 +48,7 @@ export const patientAPI = {
 export const prescriptionAPI = {
   create: (data) => api.post('/prescriptions/create', data),
   getPatientPrescriptions: () => api.get('/patient/prescriptions'),
+  getPatientRevisits: () => api.get('/patients/revisits'),
 };
 
 export const medicineAPI = {
@@ -59,17 +60,13 @@ export const healthUpdateAPI = {
   getAll: () => api.get('/health-updates'),
 };
 
-// Updated doctorAPI with the specific patient medication status endpoint
 export const doctorAPI = {
   getDashboard: () => api.get('/doctor/dashboard'),
   getPatients: () => api.get('/doctor/patients'),
   getPatientDetails: (patientId) => api.get(`/doctor/patients/${patientId}`),
   getPatientHealthUpdates: (patientId) => api.get(`/doctor/patient/${patientId}/health-updates`),
-  // Add the missing get method
   get: (url) => api.get(url),
-  // Get medication status for all patients (if needed)
   getPatientMedicationStatus: () => api.get('/doctor/patient-medication-status/'),
-  // Get medication status for specific patient
   getPatientMedicationStatusById: (patientId) => api.get(`/doctor/patient-medication-status/${patientId}/`),
 };
 

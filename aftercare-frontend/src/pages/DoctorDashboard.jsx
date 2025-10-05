@@ -124,10 +124,8 @@ const DoctorDashboard = () => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-header">
-        <h1>Doctor Portal</h1>
-        <p>Welcome to your medical dashboard</p>
-      </div>
+      
+     
 
       {/* Quick Stats */}
       <div className="stats-grid">
@@ -186,7 +184,7 @@ const DoctorDashboard = () => {
                     {new Date(prescription.created_at).toLocaleDateString()}
                   </small>
                 </div>
-                <ArrowRight size={16} className="arrow-icon" />
+                
               </div>
             ))}
             {(!dashboardData?.recent_prescriptions || dashboardData.recent_prescriptions.length === 0) && (
@@ -275,7 +273,7 @@ const DoctorDashboard = () => {
       <style>{`
         .dashboard {
           padding: 20px;
-          max-width: 1200px;
+       
           margin: 0 auto;
         }
 
