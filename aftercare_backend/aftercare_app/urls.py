@@ -30,4 +30,5 @@ urlpatterns = [
     path("api/doctor/patient/<uuid:patient_id>/health-updates", DoctorPatientHealthUpdatesView.as_view(), name="doctor-patient-health-updates"),
     path('api/doctor/patient/<uuid:patient_id>/schedule-revisit/', SchedulePatientRevisitView.as_view(), name='schedule-patient-revisit'),
     path('api/doctor/patient-medication-status/', DoctorPatientMedicationStatusView.as_view(), name='doctor-patient-medication-status'),
+     path('api/doctor/patient-medication-status/<uuid:patient_id>/', DoctorPatientMedicationStatusView.as_view(), name='doctor-patient-medication-status-by-id'),
 ]
