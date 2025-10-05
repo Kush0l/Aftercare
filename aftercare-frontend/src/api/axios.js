@@ -59,12 +59,18 @@ export const healthUpdateAPI = {
   getAll: () => api.get('/health-updates'),
 };
 
-// In your api/axios.js file
+// Updated doctorAPI with the specific patient medication status endpoint
 export const doctorAPI = {
   getDashboard: () => api.get('/doctor/dashboard'),
   getPatients: () => api.get('/doctor/patients'),
   getPatientDetails: (patientId) => api.get(`/doctor/patients/${patientId}`),
-  getPatientHealthUpdates: (patientId) => api.get(`doctor/patient/${patientId}/health-updates`),
+  getPatientHealthUpdates: (patientId) => api.get(`/doctor/patient/${patientId}/health-updates`),
+  // Add the missing get method
+  get: (url) => api.get(url),
+  // Get medication status for all patients (if needed)
+  getPatientMedicationStatus: () => api.get('/doctor/patient-medication-status/'),
+  // Get medication status for specific patient
+  getPatientMedicationStatusById: (patientId) => api.get(`/doctor/patient-medication-status/${patientId}/`),
 };
 
 export default api;
