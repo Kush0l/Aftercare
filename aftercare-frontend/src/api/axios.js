@@ -59,10 +59,12 @@ export const healthUpdateAPI = {
   getAll: () => api.get('/health-updates'),
 };
 
+// In your api/axios.js file
 export const doctorAPI = {
   getDashboard: () => api.get('/doctor/dashboard'),
   getPatients: () => api.get('/doctor/patients'),
   getPatientDetails: (patientId) => api.get(`/doctor/patients/${patientId}`),
+  getPatientHealthUpdates: (patientId) => api.get(`doctor/patient/${patientId}/health-updates`),
 };
 
 export default api;

@@ -50,6 +50,7 @@ function AppRoutes() {
         <Route path="create-prescription" element={<CreatePrescription />} />
         <Route path="patients" element={<PatientDetails />} />
         <Route path="analytics" element={<PatientAnalytics />} />
+        <Route path="analytics/:patientId" element={<PatientAnalytics />} />
       </Route>
 
       {/* Patient Routes */}
