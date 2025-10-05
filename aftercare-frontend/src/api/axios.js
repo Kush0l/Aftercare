@@ -59,6 +59,9 @@ export const healthUpdateAPI = {
   getAll: () => api.get('/health-updates'),
 };
 
+
+
+
 // Updated doctorAPI with the specific patient medication status endpoint
 export const doctorAPI = {
   getDashboard: () => api.get('/doctor/dashboard'),
@@ -71,6 +74,11 @@ export const doctorAPI = {
   getPatientMedicationStatus: () => api.get('/doctor/patient-medication-status/'),
   // Get medication status for specific patient
   getPatientMedicationStatusById: (patientId) => api.get(`/doctor/patient-medication-status/${patientId}/`),
+
+
+  scheduleRevisit: (patientId, data) =>
+    api.post(`/doctor/patient/${patientId}/schedule-revisit/`, data),
+  
 };
 
 export default api;
