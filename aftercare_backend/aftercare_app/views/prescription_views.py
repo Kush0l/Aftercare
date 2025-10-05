@@ -126,49 +126,113 @@ class PatientPrescriptionsView(View):
         
 
 
+# @method_decorator(csrf_exempt, name='dispatch')
+# class DoctorPatientMedicationStatusView(View):
+#     @user_type_required('doctor')
+#     def get(self, request):
+#         try:
+#             # Get all prescriptions by this doctor
+#             prescriptions = Prescription.objects.filter(
+#                 doctor=request.user,
+#                 is_active=True
+#             ).select_related('patient').prefetch_related('medicines__schedules')
+            
+#             result = []
+#             for prescription in prescriptions:
+#                 prescription_data = {
+#                     'prescription_id': str(prescription.id),
+#                     'patient_name': f"{prescription.patient.first_name} {prescription.patient.last_name}",
+#                     'diagnosis': prescription.diagnosis,
+#                     'prescription_date': prescription.created_at.date().isoformat(),
+#                     'medicines': []
+#                 }
+                
+#                 for medicine in prescription.medicines.all():
+#                     medicine_data = {
+#                         'medicine_name': medicine.name,
+#                         'dosage': medicine.dosage,
+#                         'schedules': []
+#                     }
+                    
+#                     for schedule in medicine.schedules.all().order_by('scheduled_date', 'scheduled_time'):
+#                         medicine_data['schedules'].append({
+#                             'scheduled_date': schedule.scheduled_date.isoformat(),
+#                             'scheduled_time': schedule.scheduled_time.time().isoformat(),
+#                             'is_taken': schedule.is_taken,
+#                             'taken_at': schedule.taken_at.isoformat() if schedule.taken_at else None
+#                         })
+                    
+#                     prescription_data['medicines'].append(medicine_data)
+                
+#                 result.append(prescription_data)
+            
+#             return JsonResponse({
+#                 'prescriptions': result,
+#                 'total_prescriptions': len(result)
+#             })
+            
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class DoctorPatientMedicationStatusView(View):
     @user_type_required('doctor')
     def get(self, request):
         try:
-            # Get all prescriptions by this doctor
-            prescriptions = Prescription.objects.filter(
-                doctor=request.user,
-                is_active=True
-            ).select_related('patient').prefetch_related('medicines__schedules')
+            # Get all unique patients who have prescriptions from this doctor
+            patients = User.objects.filter(
+                prescriptions_received__doctor=request.user,
+                user_type='patient'
+            ).distinct()
             
             result = []
-            for prescription in prescriptions:
-                prescription_data = {
-                    'prescription_id': str(prescription.id),
-                    'patient_name': f"{prescription.patient.first_name} {prescription.patient.last_name}",
-                    'diagnosis': prescription.diagnosis,
-                    'prescription_date': prescription.created_at.date().isoformat(),
-                    'medicines': []
+            for patient in patients:
+                patient_data = {
+                    'patient_id': str(patient.id),
+                    'patient_name': f"{patient.first_name} {patient.last_name}",
+                    'prescriptions': []
                 }
                 
-                for medicine in prescription.medicines.all():
-                    medicine_data = {
-                        'medicine_name': medicine.name,
-                        'dosage': medicine.dosage,
-                        'schedules': []
+                # Get all prescriptions for this patient from this doctor
+                prescriptions = Prescription.objects.filter(
+                    doctor=request.user,
+                    patient=patient,
+                    is_active=True
+                ).prefetch_related('medicines__schedules')
+                
+                for prescription in prescriptions:
+                    prescription_data = {
+                        'prescription_id': str(prescription.id),
+                        'diagnosis': prescription.diagnosis,
+                        'prescription_date': prescription.created_at.date().isoformat(),
+                        'medicines': []
                     }
                     
-                    for schedule in medicine.schedules.all().order_by('scheduled_date', 'scheduled_time'):
-                        medicine_data['schedules'].append({
-                            'scheduled_date': schedule.scheduled_date.isoformat(),
-                            'scheduled_time': schedule.scheduled_time.time().isoformat(),
-                            'is_taken': schedule.is_taken,
-                            'taken_at': schedule.taken_at.isoformat() if schedule.taken_at else None
-                        })
+                    for medicine in prescription.medicines.all():
+                        medicine_data = {
+                            'medicine_name': medicine.name,
+                            'dosage': medicine.dosage,
+                            'schedules': []
+                        }
+                        
+                        for schedule in medicine.schedules.all().order_by('scheduled_date', 'scheduled_time'):
+                            medicine_data['schedules'].append({
+                                'scheduled_date': schedule.scheduled_date.isoformat(),
+                                'scheduled_time': schedule.scheduled_time.time().isoformat(),
+                                'is_taken': schedule.is_taken,
+                                'taken_at': schedule.taken_at.isoformat() if schedule.taken_at else None
+                            })
+                        
+                        prescription_data['medicines'].append(medicine_data)
                     
-                    prescription_data['medicines'].append(medicine_data)
+                    patient_data['prescriptions'].append(prescription_data)
                 
-                result.append(prescription_data)
+                result.append(patient_data)
             
             return JsonResponse({
-                'prescriptions': result,
-                'total_prescriptions': len(result)
+                'patients': result,
+                'total_patients': len(result)
             })
             
         except Exception as e:
