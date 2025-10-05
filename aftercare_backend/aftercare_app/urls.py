@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views.auth import DoctorRegisterView, LoginView
 from .views.patient_views import PatientSearchCreateView,PatientRevisitListView
-from .views.prescription_views import PrescriptionCreateView, PatientPrescriptionsView
+from .views.prescription_views import PrescriptionCreateView, PatientPrescriptionsView, DoctorPatientMedicationStatusView
 from .views.medicine_views import MarkMedicineTakenView, HealthUpdateView, GetTodayMedicineView
 from .views.doctor_views import DoctorDashboardView, DoctorPatientDetailView, DoctorPatientHealthUpdatesView,SchedulePatientRevisitView
 
@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/doctor/patients/<uuid:patient_id>', DoctorPatientDetailView.as_view(), name='doctor-patient-detail'),
     path("api/doctor/patient/<uuid:patient_id>/health-updates", DoctorPatientHealthUpdatesView.as_view(), name="doctor-patient-health-updates"),
     path('api/doctor/patient/<uuid:patient_id>/schedule-revisit/', SchedulePatientRevisitView.as_view(), name='schedule-patient-revisit'),
+    path('api/doctor/patient-medication-status/', DoctorPatientMedicationStatusView.as_view(), name='doctor-patient-medication-status'),
 ]

@@ -123,3 +123,53 @@ class PatientPrescriptionsView(View):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+        
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class DoctorPatientMedicationStatusView(View):
+    @user_type_required('doctor')
+    def get(self, request):
+        try:
+            # Get all prescriptions by this doctor
+            prescriptions = Prescription.objects.filter(
+                doctor=request.user,
+                is_active=True
+            ).select_related('patient').prefetch_related('medicines__schedules')
+            
+            result = []
+            for prescription in prescriptions:
+                prescription_data = {
+                    'prescription_id': str(prescription.id),
+                    'patient_name': f"{prescription.patient.first_name} {prescription.patient.last_name}",
+                    'diagnosis': prescription.diagnosis,
+                    'prescription_date': prescription.created_at.date().isoformat(),
+                    'medicines': []
+                }
+                
+                for medicine in prescription.medicines.all():
+                    medicine_data = {
+                        'medicine_name': medicine.name,
+                        'dosage': medicine.dosage,
+                        'schedules': []
+                    }
+                    
+                    for schedule in medicine.schedules.all().order_by('scheduled_date', 'scheduled_time'):
+                        medicine_data['schedules'].append({
+                            'scheduled_date': schedule.scheduled_date.isoformat(),
+                            'scheduled_time': schedule.scheduled_time.time().isoformat(),
+                            'is_taken': schedule.is_taken,
+                            'taken_at': schedule.taken_at.isoformat() if schedule.taken_at else None
+                        })
+                    
+                    prescription_data['medicines'].append(medicine_data)
+                
+                result.append(prescription_data)
+            
+            return JsonResponse({
+                'prescriptions': result,
+                'total_prescriptions': len(result)
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
