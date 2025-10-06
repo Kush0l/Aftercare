@@ -1,2 +1,8 @@
 django
 psycopg2-binary
+dj-database-url
+django-environ
+apscheduler
+twilio
+pytz
+django-cors-headers
