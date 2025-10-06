@@ -68,6 +68,11 @@ export const doctorAPI = {
   get: (url) => api.get(url),
   getPatientMedicationStatus: () => api.get('/doctor/patient-medication-status/'),
   getPatientMedicationStatusById: (patientId) => api.get(`/doctor/patient-medication-status/${patientId}/`),
+
+
+  scheduleRevisit: (patientId, data) =>
+    api.post(`/doctor/patient/${patientId}/schedule-revisit/`, data),
+  
 };
 
 export default api;
